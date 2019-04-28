@@ -1,22 +1,24 @@
-command! -range=% GetBranchLink <line1>,<line2>call s:getbranchlink()
-function! s:getbranchlink() range
-    let currentdir = getcwd()
-    echo currentdir
-    let fullpath = expand('%:p:h')
-    echo fullpath
-    let remote = system("git config --get remote.origin.url")
-    echo remote
-    if empty(matchstr(remote, '.*github.*'))
-        echo "no github!"
+command! -range GetCurrentBranchLink <line1>,<line2>call s:get_current_branch_link()
+function! s:get_current_branch_link() range
+    let s:currentdir = getcwd()
+    lcd %:p:h
+    let s:remote = system("git config --get remote.origin.url")
+    if empty(matchstr(s:remote, '.*github.*'))
         return
     endif
-    let repo = substitute(matchstr(remote, "github.com.*/[a-zA-Z0-9_-]*"), ":", "/", "g")
-    echo repo
-    let branch = system("git rev-parse --abbrev-ref HEAD")
-    let root = system("git rev-parse --show-toplevel")
+    let s:repo = substitute(matchstr(s:remote, "github.com.*/[a-zA-Z0-9_-]*"), ":", "/", "g")
+    let s:branch = system("git rev-parse --abbrev-ref HEAD")
+    let s:root = system("git rev-parse --show-toplevel")
 
-    " https://github.com/OWNER/REPO/blob/BRANCH/PATH/FROM/ROOT.go#L1-L3
-    echo a:firstline
-    echo a:lastline
-"    lcd currentdir
+    let s:path_from_root = strpart(expand('%:p'), strlen(s:root))
+
+    " https://github.com/OWNER/REPO/blob/BRANCH/PATH/FROM/ROOT#LN-LM
+    let s:link = "https://" . s:repo . "/blob/" . s:branch . "/" . s:path_from_root
+    if a:firstline == a:lastline
+        let s:link = s:link . "#L" . a:firstline
+    else
+        let s:link = s:link . "#L" . a:firstline . "-L".a:lastline
+    endif
+    let @+ = s:link
+    execute 'lcd' . s:currentdir
 endfunction
