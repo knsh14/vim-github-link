@@ -14,7 +14,7 @@ function! s:execute_with_commit(commit, startline, endline)
     let s:currentdir = getcwd()
     lcd %:p:h
     let s:remote = system("git config --get remote.origin.url")
-    if empty(matchstr(s:remote, '.*github.*'))
+    if matchstr(s:remote, '.*[github|gitlab].*') < 0
         return
     endif
     let s:repo = ''
