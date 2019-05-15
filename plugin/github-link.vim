@@ -14,13 +14,13 @@ function! s:execute_with_commit(commit, startline, endline)
     let s:currentdir = getcwd()
     lcd %:p:h
     let s:remote = system("git config --get remote.origin.url")
-    if matchstr(s:remote, '.*[github|gitlab].*') < 0
+    if s:remote !~ '.*[github|gitlab].*'
         return
     endif
     let s:repo = ''
-    if match(s:remote, '^git') >= 0
+    if s:remote =~ '^git'
         let s:repo = s:get_repo_url_from_git_protocol(s:remote)
-    elseif match(s:remote, '^https') >= 0
+    elseif s:remote =~ '^https'
         let s:repo = s:get_repo_url_from_https_protocol(s:remote)
     else
         echo "not match any protocol schema"
