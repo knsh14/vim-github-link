@@ -20,6 +20,8 @@ function! s:execute_with_commit(commit, startline, endline)
     let s:repo = ''
     if s:remote =~ '^git'
         let s:repo = s:get_repo_url_from_git_protocol(s:remote)
+	elseif s:remote =~ '^ssh'
+		let s:repo = s:get_repo_url_from_ssh_protocol(s:remote)
     elseif s:remote =~ '^https'
         let s:repo = s:get_repo_url_from_https_protocol(s:remote)
     else
@@ -44,6 +46,11 @@ endfunction
 
 function! s:get_repo_url_from_git_protocol(uri)
     let s:matches = matchlist(a:uri, '^git@\(.*\):\(.*\).git')
+    return "https://" . s:matches[1] .'/' . s:matches[2]
+endfunction
+
+function! s:get_repo_url_from_ssh_protocol(uri)
+    let s:matches = matchlist(a:uri, '^ssh:\/\/git@\(.\{-\}\)\/\(.*\).git')
     return "https://" . s:matches[1] .'/' . s:matches[2]
 endfunction
 
