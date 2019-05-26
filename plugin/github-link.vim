@@ -1,18 +1,22 @@
 command! -range GetCurrentBranchLink <line1>,<line2>call s:get_current_branch_link()
 function! s:get_current_branch_link() range
+    let s:currentdir = getcwd()
+    lcd %:p:h
     let s:branch = system("git rev-parse --abbrev-ref HEAD")
     call s:execute_with_commit(s:branch, a:firstline, a:lastline)
+    execute 'lcd' . s:currentdir
 endfunction
 
 command! -range GetCurrentCommitLink <line1>,<line2>call s:get_current_commit_link()
 function! s:get_current_commit_link() range
+    let s:currentdir = getcwd()
+    lcd %:p:h
     let s:commit = system("git rev-parse HEAD")
     call s:execute_with_commit(s:commit, a:firstline, a:lastline)
+    execute 'lcd' . s:currentdir
 endfunction
 
 function! s:execute_with_commit(commit, startline, endline)
-    let s:currentdir = getcwd()
-    lcd %:p:h
     let s:remote = system("git config --get remote.origin.url")
     if s:remote !~ '.*[github|gitlab].*'
         return
@@ -39,7 +43,6 @@ function! s:execute_with_commit(commit, startline, endline)
     endif
     let @+ = s:link
     echo 'copied ' . s:link
-    execute 'lcd' . s:currentdir
 endfunction
 
 function! s:get_repo_url_from_git_protocol(uri)
