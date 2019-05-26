@@ -41,6 +41,7 @@ function! s:execute_with_commit(commit, startline, endline)
     else
         let s:link = s:link . "#L" . a:startline . "-L". a:endline
     endif
+    let s:link = substitute(s:link, "[\n\t\s]", "", "g")
     let @+ = s:link
     echo 'copied ' . s:link
 endfunction
