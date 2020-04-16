@@ -17,23 +17,24 @@ function! s:get_current_commit_link() range
 endfunction
 
 function! s:execute_with_commit(commit, startline, endline)
-    let s:remote = system("git config --get remote.origin.url")
+    let s:remote = system("git ls-remote --get-url origin")
     if s:remote !~ '.*[github|gitlab].*'
         return
     endif
+
     let s:repo = ''
     if s:remote =~ '^git'
         let s:repo = s:get_repo_url_from_git_protocol(s:remote)
-	elseif s:remote =~ '^ssh'
-		let s:repo = s:get_repo_url_from_ssh_protocol(s:remote)
+    elseif s:remote =~ '^ssh'
+        let s:repo = s:get_repo_url_from_ssh_protocol(s:remote)
     elseif s:remote =~ '^https'
         let s:repo = s:get_repo_url_from_https_protocol(s:remote)
     else
-        echo "not match any protocol schema"
+        echoerr "not match any protocol schema"
         return
     endif
-    let s:root = system("git rev-parse --show-toplevel")
 
+    let s:root = system("git rev-parse --show-toplevel")
     let s:path_from_root = strpart(expand('%:p'), strlen(s:root))
 
     " https://github.com/OWNER/REPO/blob/BRANCH/PATH/FROM/ROOT#LN-LM
@@ -49,7 +50,7 @@ function! s:execute_with_commit(commit, startline, endline)
 endfunction
 
 function! s:get_repo_url_from_git_protocol(uri)
-    let s:matches = matchlist(a:uri, '^git@\(.*\):\(.*\).git')
+    let s:matches = matchlist(a:uri, '^git@\(.*\):\(.*\)$')
     return "https://" . s:matches[1] .'/' . s:matches[2]
 endfunction
 
