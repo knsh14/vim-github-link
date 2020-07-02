@@ -19,6 +19,7 @@ endfunction
 function! s:execute_with_commit(commit, startline, endline)
     let s:remote = system("git ls-remote --get-url origin")
     if s:remote !~ '.*[github|gitlab].*'
+        echoerr "Unknown remote host"
         return
     endif
 
@@ -30,7 +31,7 @@ function! s:execute_with_commit(commit, startline, endline)
     elseif s:remote =~ '^https'
         let s:repo = s:get_repo_url_from_https_protocol(s:remote)
     else
-        echoerr "not match any protocol schema"
+        echoerr "Remote doesn't match any known protocol"
         return
     endif
 
