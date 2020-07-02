@@ -65,7 +65,6 @@ endfunction
 
 function! s:get_repo_url_from_https_protocol(uri)
     let s:matches = matchlist(a:uri, '^\(https:.*\)$')
-    echo s:matches
     return s:trim_git_suffix(s:matches[1])
 endfunction
 
