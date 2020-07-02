@@ -1,13 +1,13 @@
 vim-github-link
 ---
 
-Copy github/gitlab permalink for current line(s) to clipboard.
+Copy github/gitlab link for current line(s) to clipboard.
 
-Permalinks have the format `https://github.com/OWNER/REPO/blob/$REF/PATH/TO/FILE#L1-L10`.
+Links have the format `https://github.com/OWNER/REPO/blob/$REF/PATH/TO/FILE#L1-L10`.
 
 The plugin defines the following functions which returns different `$REF` references:
 
-- `GetCommitLink`: commit which most recently modified the current file
+- `GetCommitLink`: commit which most recently modified the current file (permalink)
 - `GetCurrentBranchLink`: active branch name
 - `GetCurrentCommitLink`: most recent commit - URL will 404 if you haven't pushed it to the remote
 
