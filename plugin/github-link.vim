@@ -1,24 +1,28 @@
-command! -range GetCurrentBranchLink <line1>,<line2>call s:get_current_branch_link()
-function! s:get_current_branch_link() range
+command! -range GetCommitLink <line1>,<line2>call s:get_commit_link("file")
+command! -range GetCurrentBranchLink <line1>,<line2>call s:get_commit_link("branch")
+command! -range GetCurrentCommitLink <line1>,<line2>call s:get_commit_link("head")
+
+function! s:get_commit_link(which_ref) range
     let s:currentdir = getcwd()
     lcd %:p:h
-    let s:branch = system("git rev-parse --abbrev-ref HEAD")
-    call s:execute_with_commit(s:branch, a:firstline, a:lastline)
+    if a:which_ref == "branch"
+      let s:ref = system("git rev-parse --abbrev-ref HEAD")
+    elseif a:which_ref == "head"
+      let s:ref = system("git rev-parse HEAD")
+    elseif a:which_ref == "file"
+      let s:ref = system("git rev-list -1 HEAD -- " . shellescape(expand('%')))
+    else
+      echoerr "Unknown ref type '" . a:which_ref . "'"
+      return
+    endif
+    call s:execute_with_ref(s:ref, a:firstline, a:lastline)
     execute 'lcd' . s:currentdir
 endfunction
 
-command! -range GetCurrentCommitLink <line1>,<line2>call s:get_current_commit_link()
-function! s:get_current_commit_link() range
-    let s:currentdir = getcwd()
-    lcd %:p:h
-    let s:commit = system("git rev-parse HEAD")
-    call s:execute_with_commit(s:commit, a:firstline, a:lastline)
-    execute 'lcd' . s:currentdir
-endfunction
-
-function! s:execute_with_commit(commit, startline, endline)
+function! s:execute_with_ref(ref, startline, endline)
     let s:remote = system("git ls-remote --get-url origin")
     if s:remote !~ '.*[github|gitlab].*'
+        echoerr "Unknown remote host"
         return
     endif
 
@@ -30,7 +34,7 @@ function! s:execute_with_commit(commit, startline, endline)
     elseif s:remote =~ '^https'
         let s:repo = s:get_repo_url_from_https_protocol(s:remote)
     else
-        echoerr "not match any protocol schema"
+        echoerr "Remote doesn't match any known protocol"
         return
     endif
 
@@ -38,7 +42,7 @@ function! s:execute_with_commit(commit, startline, endline)
     let s:path_from_root = strpart(expand('%:p'), strlen(s:root))
 
     " https://github.com/OWNER/REPO/blob/BRANCH/PATH/FROM/ROOT#LN-LM
-    let s:link = s:repo . "/blob/" . a:commit . "/" . s:path_from_root
+    let s:link = s:repo . "/blob/" . a:ref . "/" . s:path_from_root
     if a:startline == a:endline
         let s:link = s:link . "#L" . a:startline
     else
@@ -61,7 +65,6 @@ endfunction
 
 function! s:get_repo_url_from_https_protocol(uri)
     let s:matches = matchlist(a:uri, '^\(https:.*\)$')
-    echo s:matches
     return s:trim_git_suffix(s:matches[1])
 endfunction
 
