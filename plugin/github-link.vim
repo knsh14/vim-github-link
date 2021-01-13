@@ -46,7 +46,11 @@ function! s:execute_with_ref(ref, startline, endline)
     if a:startline == a:endline
         let s:link = s:link . "#L" . a:startline
     else
-        let s:link = s:link . "#L" . a:startline . "-L". a:endline
+        if s:remote =~ '.*github.*'
+            let s:link = s:link . "#L" . a:startline . "-L". a:endline
+        elseif s:remote =~ '.*gitlab.*'
+            let s:link = s:link . "#L" . a:startline . "-". a:endline
+        endif
     endif
     let s:link = substitute(s:link, "[\n\t ]", "", "g")
     let @+ = s:link
