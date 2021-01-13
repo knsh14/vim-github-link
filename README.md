@@ -3,7 +3,10 @@ vim-github-link
 
 Copy github/gitlab link for current line(s) to clipboard.
 
-Links have the format `https://github.com/OWNER/REPO/blob/$REF/PATH/TO/FILE#L1-L10`.
+Links have the format:
+
+- GitHub - `https://GITHUB_REMOTE_DOMAIN/OWNER/REPO/blob/$REF/PATH/TO/FILE#L1-L10`.
+- GitLab - `https://GITLAB_REMOTE_DOMAIN/OWNER/REPO/blob/$REF/PATH/TO/FILE#L1-10`.
 
 The plugin defines the following functions which returns different `$REF` references:
 
