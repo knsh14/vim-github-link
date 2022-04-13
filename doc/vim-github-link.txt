@@ -1,0 +1,30 @@
+*vim-github-link.txt*  Copy github/gitlab link for current line(s) to clipboard.
+===============================================================================
+
+Links are copied with the format have the format:
+https://[github|gitlab].com/OWNER/REPO/blob/$REF/PATH/TO/FILE#L1-L10
+
+COMMANDS                                               *vim-github-link-commands*
+
+                                                       *:GetCommitLink*
+:GetCommitLink              $REF is the commit which most recently modified
+                            the file (permalink). This is a good default.
+                                                       *:GetCurrentBranchLink*
+:GetCurrentBranchLink       $REF is the name of the current branch.
+                                                       *:GetCurrentCommitLink*
+:GetCurrentCommitLink       $REF is the most recent commit. The link will
+                            404 if you haven't pushed to the remote.
+
+USAGE                                                  *vim-github-link-usage*
+
+In normal mode:
+>
+        :1,3GetCommitLink
+<
+copies lines a link to lines 1 through 3 to the clipboard.
+
+In visual mode it is sufficient to select text and then type
+>
+        :GetCommitLink
+<
+ vim:tw=78:et:ft=help:norl:
