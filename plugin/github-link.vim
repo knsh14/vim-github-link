@@ -43,6 +43,13 @@ function! s:execute_with_ref(ref, startline, endline)
 
     " https://github.com/OWNER/REPO/blob/BRANCH/PATH/FROM/ROOT#LN-LM
     let s:link = s:repo . "/blob/" . a:ref . "/" . s:path_from_root
+
+    " Check for doc extensions and add plain query parameter, because otherwise
+    " GitHub ignores the line highlight
+    if s:link =~? '\v.*\.(md|rst|markdown|mdown|mkdn|md|textile|rdoc|org|creole|mediawiki|wiki|rst|asciidoc|adoc|asc|pod)$' && s:remote =~ '.*github.*'
+        let s:link = s:link . "?plain=1"
+    endif
+
     if a:startline == a:endline
         let s:link = s:link . "#L" . a:startline
     else
