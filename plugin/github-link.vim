@@ -42,7 +42,7 @@ function! s:execute_with_ref(ref, startline, endline)
     let s:path_from_root = strpart(expand('%:p'), strlen(s:root))
 
     " https://github.com/OWNER/REPO/blob/BRANCH/PATH/FROM/ROOT#LN-LM
-    let s:link = s:repo . "/blob/" . a:ref . "/" . s:path_from_root
+    let s:link = s:repo . "/blob/" . a:ref . "/" . s:url_encode_path_segments(s:path_from_root)
 
     " Check for doc extensions and add plain query parameter, because otherwise
     " GitHub ignores the line highlight
@@ -83,4 +83,18 @@ function! s:trim_git_suffix(str)
     " strip whitespace such as trailing \r from git command output
     let s:nospace = substitute(a:str, '[[:space:]]', '', 'g')
     return substitute(s:nospace, '\.git$', '', '')
+endfunction
+
+" copied from tpope/vim-unimpaired
+function! s:url_encode(str) abort
+  " iconv trick to convert utf-8 bytes to 8bits indiviual char.
+  return substitute(iconv(a:str, 'latin1', 'utf-8'),'[^A-Za-z0-9_.~-]','\="%".printf("%02X",char2nr(submatch(0)))','g')
+endfunction
+
+" take a string representing a filepath and url encode the names of all of the
+" files and directories
+function! s:url_encode_path_segments(path) abort
+    let s:segments = split(a:path, '/')
+    let s:encoded_segments = map(s:segments, 's:url_encode(v:val)')
+    return join(s:encoded_segments, '/')
 endfunction
