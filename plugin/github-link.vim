@@ -16,7 +16,7 @@ function! s:get_commit_link(which_ref) range
       return
     endif
     call s:execute_with_ref(s:ref, a:firstline, a:lastline)
-    execute 'lcd' . s:currentdir
+    execute 'lcd ' . s:currentdir
 endfunction
 
 function! s:execute_with_ref(ref, startline, endline)
