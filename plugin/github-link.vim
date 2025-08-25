@@ -82,7 +82,10 @@ endfunction
 function! s:trim_git_suffix(str)
     " strip whitespace such as trailing \r from git command output
     let s:nospace = substitute(a:str, '[[:space:]]', '', 'g')
-    return substitute(s:nospace, '\.git$', '', '')
+    " strip trailing slashes so the URL doesn't end up with a double slash
+    " (e.g. a remote configured as .../OWNER/REPO/ producing REPO//blob/...)
+    let s:noslash = substitute(s:nospace, '\/\+$', '', '')
+    return substitute(s:noslash, '\.git$', '', '')
 endfunction
 
 " copied from tpope/vim-unimpaired
